@@ -1,0 +1,33 @@
+name: CI Pipeline
+
+# Evento que dispara o workflow (push e pull request)
+on:
+  push:
+    branches:
+      - origin
+  pull_request:
+    branches:
+      - origin
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Baixa o código do repositório
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    # Configura o Node.js para rodar os testes
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    # Instala as dependências do projeto
+    - name: Install dependencies
+      run: npm install
+
+    # Executa os testes
+    - name: Run tests
+      run: npm test
