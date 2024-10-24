@@ -1,6 +1,5 @@
 name: CI Pipeline
 
-# Evento que dispara o workflow (push e pull request)
 on:
   push:
     branches:
@@ -10,14 +9,14 @@ on:
       - master
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-
+    
     steps:
     # Baixa o código do repositório
     - name: Checkout code
       uses: actions/checkout@v2
-    
+
     # Configura o Node.js para rodar os testes
     - name: Setup Node.js
       uses: actions/setup-node@v2
@@ -31,3 +30,31 @@ jobs:
     # Executa os testes
     - name: Run tests
       run: npm test
+
+    # Login no DockerHub
+    - name: Docker Login
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    # Build da imagem Docker
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/minha-aplicacao:latest .
+
+    # Push da imagem para o DockerHub
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/minha-aplicacao:latest
+
+    # Configuração SSH
+    - name: Add SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
+
+    # Deploy no servidor remoto
+    - name: Deploy on remote server
+      run: |
+        ssh -o StrictHostKeyChecking=no aluno@201.23.3.86 "
+          docker pull ${{ secrets.DOCKER_USERNAME }}/minha-aplicacao:latest &&
+          docker stop minha-aplicacao || true &&
+          docker rm minha-aplicacao || true &&
+          docker run -d -p 8081:8080 --name minha-aplicacao ${{ secrets.DOCKER_USERNAME }}/minha-aplicacao:latest
+        "
