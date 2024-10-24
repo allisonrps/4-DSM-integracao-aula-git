@@ -16,5 +16,5 @@ COPY . .
 # Expõe a porta 8081
 EXPOSE 8081
 
-# Comando para rodar a aplicação
+# Comando para rodar a aplicaçãoo
 CMD ["npm", "start"]
