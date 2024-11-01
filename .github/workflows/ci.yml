@@ -42,5 +42,5 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/minha-aplicacao:latest &&
           docker stop minha-aplicacao || true &&
           docker rm minha-aplicacao || true &&
-          docker run -d -p 8080:8081 --name minha-aplicacao ${{ secrets.DOCKER_USERNAME }}/minha-aplicacao:latest
+          docker run -d -p 8081:80 --name minha-aplicacao ${{ secrets.DOCKER_USERNAME }}/minha-aplicacao:latest
         "
