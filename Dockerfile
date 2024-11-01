@@ -1,20 +1,12 @@
-# Imagem base
-FROM node:14
+# Use a imagem base do nginx
+FROM nginx:alpine
 
-# Diretório de trabalho dentro do container
-WORKDIR /app
+# Copia os arquivos do projeto para o diretório padrão do nginx
+COPY . /usr/share/nginx/html
 
-# Copia o arquivo package.json e package-lock.json (se existir)
-COPY package*.json ./
-
-# Instala as dependências
-RUN npm install
-
-# Copia o restante do código para dentro do container
-COPY . .
-
-# Expõe a porta 8081
+# Expõe a porta 80 para acessar o servidor
 EXPOSE 8081
 
-# Comando para rodar a aplicaçãoo
-CMD ["npm", "start"]
+# Comando padrão para iniciar o nginx
+CMD ["nginx", "-g", "daemon off;"]
+
